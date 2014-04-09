@@ -33,7 +33,7 @@ function Floor()
 		this.initWater();
 
 		var segments = 32;
-		var maxHeight = 0.5;
+		var maxHeight = 0.3;
 		var maxRadius = 3.8;
 
 		var deltaAngle = 2.0 * Math.PI / segments;
