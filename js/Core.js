@@ -22,7 +22,7 @@ function Core()
 	{
 		this.objects = new Array();
 
- 		this.objects.push( new DebugGrid() );
+ 		//this.objects.push( new DebugGrid() );
  		this.objects.push( new Floor() );
  		this.objects.push( new Forest() );
  		this.objects.push( new Hero() );
@@ -73,6 +73,18 @@ var g_camera;
 var g_core = new Core();
 g_core.init();
 
+
+// handle resizing windows
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+
+    g_camera.aspect = window.innerWidth / window.innerHeight;
+    g_camera.updateProjectionMatrix();
+
+    g_core.renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
 var doTick = function() 
 {
 	g_core.update();
@@ -80,3 +92,4 @@ var doTick = function()
 };
 
 doTick();
+
