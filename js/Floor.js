@@ -64,37 +64,33 @@ function Floor()
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
 			var pt_0 = this.pts[i];
-			var pt_1 = this.pts[(i+1)%this.pts.length];
-
 			var pt_0_ground = pt_0.clone();
-			var pt_1_ground = pt_1.clone();
 			pt_0_ground.y = 0.0;
-			pt_1_ground.y = 0.0;
 
-			geo.vertices.push(center);
-			geo.vertices.push( pt_1 );
 			geo.vertices.push( pt_0 );
+			geo.vertices.push( pt_0_ground );
+		}
 
-			var face = new THREE.Face3(geo.vertices.length-3, geo.vertices.length-2, geo.vertices.length-1);
+		geo.vertices.push(center);
+
+		var indexCenter = geo.vertices.length-1;
+
+		for ( var i = 0; i < this.pts.length; i ++ ) 
+		{
+			var i_next = (i+1)%this.pts.length;
+
+			// face top
+			var face = new THREE.Face3( i*2, indexCenter, i_next*2 );
 			face.color.setHex( colorFloor );
 			geo.faces.push( face );
 
-			geo.vertices.push( pt_0 );
-			geo.vertices.push( pt_1 );
-			geo.vertices.push( pt_1_ground );
-
-			var face = new THREE.Face3(geo.vertices.length-3, geo.vertices.length-2, geo.vertices.length-1);
-			face.color.setHex( colorFloorSide );
-			geo.faces.push( face );
-
-			geo.vertices.push( pt_0 );
-			geo.vertices.push( pt_1_ground );
-			geo.vertices.push( pt_0_ground );
-			
-			var face = new THREE.Face3(geo.vertices.length-3, geo.vertices.length-2, geo.vertices.length-1);
-			face.color.setHex( colorFloorSide );
-			geo.faces.push( face );
-
+			// side
+			var face_0 = new THREE.Face3( i*2, i_next*2, i*2+1 );
+			var face_1 = new THREE.Face3( i*2+1, i_next*2, i_next*2+1 );
+			face_0.color.setHex( colorFloorSide );
+			face_1.color.setHex( colorFloorSide );
+			geo.faces.push( face_0 );
+			geo.faces.push( face_1 );
 		}
 
 		var vertexColorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
