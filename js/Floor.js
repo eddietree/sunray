@@ -25,13 +25,10 @@ function Floor()
 	    mesh.doubleSided = true;
 	    mesh.overdraw = true;
 	    g_scene.add(mesh);
-
 	}
 
-	this.init = function()
+	this.initPts= function()
 	{
-		this.initWater();
-
 		var segments = 32;
 		var maxHeight = 0.3;
 		var maxRadius = 3.8;
@@ -41,7 +38,7 @@ function Floor()
 		noise.seed(0);
 
 		// generate points
-		var pts = new Array();
+		this.pts = new Array();
 		for ( var i = 0; i < segments; i ++ ) 
 		{
 			var radius = maxRadius + noise.simplex2(1.0, i+1.0) * maxRadius * 0.3;
@@ -51,9 +48,12 @@ function Floor()
 			var y = (noise.simplex2(1.0, i+100.0) * 0.5 + 0.5  ) * maxHeight; 
 			var z = radius * Math.sin(angle);
 
-			pts.push( new THREE.Vector3( x,y,z ) );
+			this.pts.push( new THREE.Vector3( x,y,z ) );
 		}
+	}
 
+	this.initFlatland = function()
+	{
 		var colorFloor = 0x79A836;
 		var colorFloorSide = 0x4D7C39;
 
@@ -61,10 +61,10 @@ function Floor()
 		var geo = new THREE.Geometry();
 		var center = new THREE.Vector3( 0,0,0 );
 
-		for ( var i = 0; i < segments; i ++ ) 
+		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
-			var pt_0 = pts[i];
-			var pt_1 = pts[(i+1)%pts.length];
+			var pt_0 = this.pts[i];
+			var pt_1 = this.pts[(i+1)%this.pts.length];
 
 			var pt_0_ground = pt_0.clone();
 			var pt_1_ground = pt_1.clone();
@@ -114,6 +114,65 @@ function Floor()
 	    g_scene.add(mesh);
 	}
 
+	this.initRipple = function()
+	{
+		/// generate geometry
+		var geo = new THREE.Geometry();
+
+		var colorRipple = 0x86DEC8;
+		var rippleDist = 0.15;
+
+		for ( var i = 0; i < this.pts.length; i ++ ) 
+		{
+			var pt_0 = this.pts[i].clone();
+			var pt_1 = this.pts[(i+1)%this.pts.length].clone();
+			pt_0.y = 0.02;
+			pt_1.y = 0.02;
+
+			var pt_0_ext = pt_0.clone();
+			var pt_1_ext = pt_1.clone();
+			pt_0_ext.normalize().multiplyScalar( rippleDist );
+			pt_1_ext.normalize().multiplyScalar( rippleDist );
+			pt_0_ext.add( pt_0 )
+			pt_1_ext.add( pt_1 )
+
+			geo.vertices.push( pt_0 );
+			geo.vertices.push( pt_1 );
+			geo.vertices.push( pt_1_ext );
+			geo.vertices.push( pt_0_ext );
+
+			var face_0 = new THREE.Face3(geo.vertices.length-4, geo.vertices.length-3, geo.vertices.length-2);
+			var face_1 = new THREE.Face3(geo.vertices.length-4, geo.vertices.length-2, geo.vertices.length-1);
+			face_0.color.setHex( colorRipple );
+			face_1.color.setHex( colorRipple );
+			geo.faces.push( face_0 );
+			geo.faces.push( face_1 );
+		}
+
+		var vertexColorMaterial = new THREE.MeshBasicMaterial( { vertexColors: THREE.VertexColors } );
+
+		var colorMaterial = new THREE.MeshBasicMaterial(
+		{
+            color:              colorRipple,
+            wireframe:          false,
+            wireframeLinewidth: 3
+        });
+
+	    this.meshRipple = new THREE.Mesh(geo, colorMaterial );
+	    this.meshRipple.doubleSided = true;
+	    this.meshRipple.overdraw = true;
+
+	    g_scene.add(this.meshRipple);
+	}
+
+	this.init = function()
+	{
+		this.initWater();
+		this.initPts();
+		this.initFlatland();
+		this.initRipple();
+	}
+
 	this.draw = function()
 	{
 
@@ -121,5 +180,14 @@ function Floor()
 
 	this.update = function()
 	{
+		return;
+
+		var time = Date.now() * 0.003;
+
+		var color_0 = new THREE.Color( 0x86DEC8 );
+		var color_1 = new THREE.Color( 0xffffff );
+		color_0.lerp( color_1, Math.sin(time)*0.5+0.5 );
+
+		this.meshRipple.material.color = color_0;
 	}
 }

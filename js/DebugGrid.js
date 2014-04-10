@@ -88,7 +88,7 @@ function DebugGrid()
 	this.init = function()
 	{
 		this.initGrid();
-		//this.initBasisVectors();
+		this.initBasisVectors();
 	}
 
 	this.draw = function()
