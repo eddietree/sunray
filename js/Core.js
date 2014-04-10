@@ -5,14 +5,17 @@ function Core()
 {
 	this.init = function()
 	{
+		var clearColor = 0xC7EEEC;
+
  		// renderer
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.renderer.setClearColor( 0xC7EEEC, 1 );
+		this.renderer.setClearColor( clearColor, 1 );
 		document.body.appendChild(this.renderer.domElement);
 
 		// scene
 		g_scene = new THREE.Scene();
+		g_scene.fog = new THREE.FogExp2( clearColor, 0.07 );
 
 		// camera
  		g_camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 20);
