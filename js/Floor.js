@@ -120,7 +120,8 @@ function Floor()
 		var geo = new THREE.Geometry();
 
 		var colorRipple = 0x86DEC8;
-		var rippleDist = 0.15;
+		var rippleDistMin = 0.15;
+		var rippleDistMax = 0.4;
 
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
@@ -131,8 +132,8 @@ function Floor()
 
 			var pt_0_ext = pt_0.clone();
 			var pt_1_ext = pt_1.clone();
-			pt_0_ext.normalize().multiplyScalar( rippleDist );
-			pt_1_ext.normalize().multiplyScalar( rippleDist );
+			pt_0_ext.normalize().multiplyScalar( rippleDistMin );
+			pt_1_ext.normalize().multiplyScalar( rippleDistMin );
 			pt_0_ext.add( pt_0 )
 			pt_1_ext.add( pt_1 )
 
@@ -163,6 +164,27 @@ function Floor()
 	    this.meshRipple.overdraw = true;
 
 	    g_scene.add(this.meshRipple);
+
+
+	    // ripples
+	    var geometry = new THREE.Geometry();
+		var material = new THREE.LineBasicMaterial({ color: colorRipple });
+
+		for ( var i = 0; i <= this.pts.length; i ++ ) 
+		{
+			var pt_0 = this.pts[(i%this.pts.length)].clone();
+			pt_0.y = 0.0;
+
+			var pt_0_ext = pt_0.clone();
+			pt_0_ext.normalize().multiplyScalar( rippleDistMax );
+			pt_0_ext.add( pt_0 );
+			pt_0_ext.y = 0.02;
+
+			geometry.vertices.push( pt_0_ext );
+		}
+
+		this.meshRippleMove = new THREE.Line( geometry, material);
+		g_scene.add( this.meshRippleMove );
 	}
 
 	this.init = function()
@@ -175,19 +197,32 @@ function Floor()
 
 	this.draw = function()
 	{
-
 	}
 
 	this.update = function()
 	{
-		return;
+		var time = Date.now() * 0.0008;
+		var timeWrapped = time % 1.0;
 
-		var time = Date.now() * 0.003;
+		var rippleDistMin = 0.15;
+		var rippleDistMax = 0.5;
+		var dist = rippleDistMin + (rippleDistMax-rippleDistMin) * timeWrapped;
 
-		var color_0 = new THREE.Color( 0x86DEC8 );
-		var color_1 = new THREE.Color( 0xffffff );
-		color_0.lerp( color_1, Math.sin(time)*0.5+0.5 );
+		for ( var i = 0; i <= this.pts.length; i ++ ) 
+		{
+			var pt_0 = this.pts[(i%this.pts.length)].clone();
+			pt_0.y = 0.0;
 
-		this.meshRipple.material.color = color_0;
+			var pt_0_ext = pt_0.clone();
+			pt_0_ext.normalize().multiplyScalar( dist );
+			pt_0_ext.add( pt_0 );
+			pt_0_ext.y = 0.02;
+
+			this.meshRippleMove.geometry.vertices[i] = pt_0_ext;
+		}
+
+		this.meshRippleMove.material.transparent = true;
+		this.meshRippleMove.material.opacity = 1.0-timeWrapped;
+		this.meshRippleMove.geometry.verticesNeedUpdate = true;
 	}
 }
