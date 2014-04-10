@@ -8,14 +8,14 @@ function Core()
  		// renderer
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.renderer.setClearColorHex( 0xC7EEEC, 1 );
+		this.renderer.setClearColor( 0xC7EEEC, 1 );
 		document.body.appendChild(this.renderer.domElement);
 
 		// scene
 		g_scene = new THREE.Scene();
 
 		// camera
- 		g_camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+ 		g_camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 1000);
  		g_camera.lookAt( new THREE.Vector3(0.0,0.0,0.0) );
 
  		this.initItems();	
