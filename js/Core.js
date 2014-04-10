@@ -15,7 +15,7 @@ function Core()
 		g_scene = new THREE.Scene();
 
 		// camera
- 		g_camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 1000);
+ 		g_camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 20);
  		g_camera.lookAt( new THREE.Vector3(0.0,0.0,0.0) );
 
  		this.initItems();	

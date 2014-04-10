@@ -6,7 +6,7 @@ function Forest()
 
 		var heightStem = randFloat(0.4, 0.6);
 		var heightBush = heightStem * randFloat(1.5,2.0);
-		var radiusStem = 0.05;
+		var radiusStem = 0.04;
 		var radiusBush = heightBush*0.3;
 
 		var colorStem = 0x34432C;
