@@ -116,7 +116,7 @@ function Floor()
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
 			var face_0 = new THREE.Face3(i*2, ((i+1)%this.pts.length)*2, i*2+1);
-			var face_1 = new THREE.Face3(i*2, ((i+1)%this.pts.length)*2, ((i+1)%this.pts.length)*2+1);
+			var face_1 = new THREE.Face3(i*2+1, ((i+1)%this.pts.length)*2, ((i+1)%this.pts.length)*2+1);
 			face_0.color.setHex( colorRipple );
 			face_1.color.setHex( colorRipple );
 			geo.faces.push( face_0 );
