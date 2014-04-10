@@ -54,15 +54,8 @@ function Floor()
 
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
-			geo.vertices.push(center);
-			geo.vertices.push(center);
-
-			/*var pt_0 = this.pts[i];
-			var pt_0_ground = pt_0.clone();
-			pt_0_ground.y = 0.0;
-
-			geo.vertices.push( pt_0 );
-			geo.vertices.push( pt_0_ground );*/
+			geo.vertices.push( new THREE.Vector3(0,0,0) );
+			geo.vertices.push( new THREE.Vector3(0,0,0) );
 		}
 
 		geo.vertices.push(center);
@@ -106,34 +99,24 @@ function Floor()
 
 	this.initRipple = function()
 	{
+		this.rippleDistMin = 0.15;
+		this.rippleDistMax = 0.4;
+
 		/// generate geometry
 		var geo = new THREE.Geometry();
 
-		var colorRipple = 0x86DEC8;
-		var rippleDistMin = 0.15;
-		var rippleDistMax = 0.4;
+		for ( var i = 0; i < this.pts.length; i++ ) 
+		{
+			geo.vertices.push( new THREE.Vector3(0,0,0) );
+			geo.vertices.push( new THREE.Vector3(0,0,0) );
+		}
 
+		// faces
+		var colorRipple = 0x86DEC8;
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
-			var pt_0 = this.pts[i].clone();
-			var pt_1 = this.pts[(i+1)%this.pts.length].clone();
-			pt_0.y = 0.02;
-			pt_1.y = 0.02;
-
-			var pt_0_ext = pt_0.clone();
-			var pt_1_ext = pt_1.clone();
-			pt_0_ext.normalize().multiplyScalar( rippleDistMin );
-			pt_1_ext.normalize().multiplyScalar( rippleDistMin );
-			pt_0_ext.add( pt_0 )
-			pt_1_ext.add( pt_1 )
-
-			geo.vertices.push( pt_0 );
-			geo.vertices.push( pt_1 );
-			geo.vertices.push( pt_1_ext );
-			geo.vertices.push( pt_0_ext );
-
-			var face_0 = new THREE.Face3(geo.vertices.length-4, geo.vertices.length-3, geo.vertices.length-2);
-			var face_1 = new THREE.Face3(geo.vertices.length-4, geo.vertices.length-2, geo.vertices.length-1);
+			var face_0 = new THREE.Face3(i*2, ((i+1)%this.pts.length)*2, i*2+1);
+			var face_1 = new THREE.Face3(i*2, ((i+1)%this.pts.length)*2, ((i+1)%this.pts.length)*2+1);
 			face_0.color.setHex( colorRipple );
 			face_1.color.setHex( colorRipple );
 			geo.faces.push( face_0 );
@@ -165,7 +148,7 @@ function Floor()
 			pt_0.y = 0.0;
 
 			var pt_0_ext = pt_0.clone();
-			pt_0_ext.normalize().multiplyScalar( rippleDistMax );
+			pt_0_ext.normalize().multiplyScalar( this.rippleDistMax );
 			pt_0_ext.add( pt_0 );
 			pt_0_ext.y = 0.02;
 
@@ -193,10 +176,8 @@ function Floor()
 		var time = Date.now() * 0.0008;
 		var timeWrapped = time % 1.0;
 
-		var rippleDistMin = 0.15;
-		var rippleDistMax = 0.5;
-		var dist = rippleDistMin + (rippleDistMax-rippleDistMin) * timeWrapped;
-
+		// update moving mesh ripple
+		var dist = this.rippleDistMin + (this.rippleDistMax-this.rippleDistMin) * timeWrapped;
 		for ( var i = 0; i <= this.pts.length; i ++ ) 
 		{
 			var pt_0 = this.pts[(i%this.pts.length)].clone();
@@ -213,6 +194,22 @@ function Floor()
 		this.meshRippleMove.material.transparent = true;
 		this.meshRippleMove.material.opacity = 1.0-timeWrapped;
 		this.meshRippleMove.geometry.verticesNeedUpdate = true;
+
+		// update mesh ripple
+		for ( var i = 0; i < this.pts.length; i++ ) 
+		{
+			var pt_0 = this.pts[i%this.pts.length].clone();
+			pt_0.y = 0.02;
+
+			var pt_0_ext = pt_0.clone();
+			pt_0_ext.normalize().multiplyScalar( this.rippleDistMin );
+			pt_0_ext.add( pt_0 );
+
+			this.meshRipple.geometry.vertices[i*2] = pt_0;
+			this.meshRipple.geometry.vertices[i*2+1] = pt_0_ext;
+		}
+
+		this.meshRipple.geometry.verticesNeedUpdate = true;
 	}
 
 	this.updatePts = function()
@@ -221,11 +218,12 @@ function Floor()
 		var maxRadius = 3.8;
 
 		var deltaAngle = 2.0 * Math.PI / this.pts.length;
+		var time = 0.0;//Date.now() * 0.0002;
 
 		// generate points
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
-			var radius = maxRadius + noise.simplex2(1.0, i+1.0) * maxRadius * 0.3;
+			var radius = maxRadius + noise.simplex2(1.0+time, i+1.0) * maxRadius * 0.3;
 			var angle = i * deltaAngle;
 
 			var x = radius * Math.cos(angle);
