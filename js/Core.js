@@ -48,7 +48,10 @@ function Core()
 
 		for( var i=0; i < this.objects.length; i++ )
  		{
- 			this.objects[i].draw();
+ 			var obj = this.objects[i];
+
+ 			if ( obj.hasOwnProperty('update') )
+	 			obj.draw();
  		}
 
 	    g_core.renderer.render(g_scene, g_camera);
@@ -71,8 +74,25 @@ function Core()
 
 		for( var i=0; i < this.objects.length; i++ )
  		{
- 			this.objects[i].update();
+ 			var obj = this.objects[i];
+
+ 			if ( obj.hasOwnProperty('update') )
+	 			obj.update();
  		}
+	}
+}
+
+function getObj( a_id )
+{
+	for( var i=0; i < g_core.objects.length; i++ )
+	{
+		var obj = g_core.objects[i];
+		if ( obj.hasOwnProperty('id') && obj.id == a_id )
+		{
+			return obj;
+		}
+
+		return null;
 	}
 }
 

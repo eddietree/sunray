@@ -5,3 +5,7 @@ function randInt(min, max) {
 function randFloat(min, max) {
   return Math.random() * (max - min) + min;
 }
+
+function lerp(a, b, alpha) { 
+	return (1 - alpha) * a + alpha * b; 
+};
