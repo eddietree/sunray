@@ -27,6 +27,7 @@ function Core()
 
  		this.objects.push( new DebugGrid() );
  		this.objects.push( new Floor() );
+ 		this.objects.push( new Mountain() );
  		this.objects.push( new Forest() );
  		this.objects.push( new Hero() );
  		this.objects.push( new Particles() );

@@ -25,7 +25,6 @@ function Forest()
 
 		for ( var i = 0; i < segments; i++ )
 		{
-			
 			var angle_0 = i * deltaAngle;
 			var angle_1 = (i+1) * deltaAngle;
 
@@ -89,7 +88,7 @@ function Forest()
 
 		for( var i = 0; i < numTrees; i++ )
 		{
-			var angle = randFloat( 0.0, 2.0*Math.PI );
+			var angle = randFloat( -0.75*Math.PI, 0.75*Math.PI );
 			var radius = randFloat( spawnRadius*0.5, spawnRadius );
 
 			var x = center.x + Math.cos(angle) * radius;
