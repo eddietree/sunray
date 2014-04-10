@@ -1,3 +1,6 @@
+
+var g_heroPos = new THREE.Vector3(1.2,0.0,0.0);
+
 function Core()
 {
 	this.init = function()
@@ -22,7 +25,7 @@ function Core()
 	{
 		this.objects = new Array();
 
- 		//this.objects.push( new DebugGrid() );
+ 		this.objects.push( new DebugGrid() );
  		this.objects.push( new Floor() );
  		this.objects.push( new Forest() );
  		this.objects.push( new Hero() );

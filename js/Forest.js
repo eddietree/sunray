@@ -85,11 +85,16 @@ function Forest()
 		var numTrees = 6;
 		var spawnRadius = 2.5;
 
+		var center = g_heroPos;
+
 		for( var i = 0; i < numTrees; i++ )
 		{
-			var x = randFloat( -spawnRadius, spawnRadius );
+			var angle = randFloat( 0.0, 2.0*Math.PI );
+			var radius = randFloat( spawnRadius*0.5, spawnRadius );
+
+			var x = center.x + Math.cos(angle) * radius;
 			var y = 0.0;
-			var z = randFloat( -spawnRadius, spawnRadius );
+			var z = center.z + Math.sin(angle) * radius;
 
 			this.makeTreeAt( new THREE.Vector3(x,y,z) );
 		}

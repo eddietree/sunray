@@ -13,17 +13,17 @@ function Particles()
 		var colors = geometry.attributes.color.array;
 
 		var color = new THREE.Color();
+		var center = g_heroPos;
 
-		var spread = 3.0
-		var n = 1000, n2 = n / 2; // particles spread in the cube
+		var spread = 2.5;
 
 		for ( var i = 0; i < positions.length; i += 3 ) {
 
 			// positions
 
-			var x = randFloat( -spread, spread );
+			var x = center.x + randFloat( -spread, spread );
 			var y = randFloat( 0.1, spread*0.5 );
-			var z = randFloat( -spread, spread );
+			var z = center.z + randFloat( -spread, spread );
 
 			positions[ i ]     = x;
 			positions[ i + 1 ] = y;

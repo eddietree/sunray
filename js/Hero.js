@@ -6,6 +6,7 @@ function Hero()
 		var material = new THREE.MeshBasicMaterial({color: 0xffffff});
 		var ray = new THREE.Mesh(geometry, material);
 
+		ray.position = g_heroPos;
 
 		g_scene.add(ray);
 	}
