@@ -1,5 +1,7 @@
 function Floor()
 {
+	this.id = 'terrain';
+
 	this.initWater = function()
 	{
 		var maxSize = 100.0;
@@ -161,6 +163,9 @@ function Floor()
 
 	this.init = function()
 	{
+		this.time = 0.0;
+		this.speedMove = 0.0;
+
 		this.initWater();
 		this.initPts();
 		this.initTerrain();
@@ -218,7 +223,7 @@ function Floor()
 		var maxRadius = 3.8;
 
 		var deltaAngle = 2.0 * Math.PI / this.pts.length;
-		var time = 0.0;//Date.now() * 0.0002;
+		var time = this.time;//0.0;//Date.now() * 0.0002;
 
 		// generate points
 		for ( var i = 0; i < this.pts.length; i ++ ) 
@@ -251,6 +256,9 @@ function Floor()
 
 	this.update = function()
 	{
+		this.time += this.speedMove;
+		this.speedMove = lerp( this.speedMove, 0.0, 0.1 );
+
 		this.updatePts();
 		this.updateTerrain();
 		this.updateRipple();

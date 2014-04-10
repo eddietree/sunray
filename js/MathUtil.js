@@ -7,5 +7,5 @@ function randFloat(min, max) {
 }
 
 function lerp(a, b, alpha) { 
-	return (1 - alpha) * a + alpha * b; 
+	return a + (b-a) * alpha; 
 };
