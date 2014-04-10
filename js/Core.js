@@ -26,6 +26,7 @@ function Core()
  		this.objects.push( new Floor() );
  		this.objects.push( new Forest() );
  		this.objects.push( new Hero() );
+ 		this.objects.push( new Particles() );
  		this.objects.push( new LightRay() );
 
  		for( var i=0; i < this.objects.length; i++ )
