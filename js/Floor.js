@@ -6,10 +6,11 @@ function Floor()
 		var y = -0.02;
 
 	    var geo = new THREE.Geometry();
-	    geo.vertices.push(new THREE.Vector3( -maxSize, y, -maxSize ));
-	    geo.vertices.push(new THREE.Vector3( maxSize, y, -maxSize ));
+
+	    geo.vertices.push(new THREE.Vector3(-maxSize, y,-maxSize ));
+	    geo.vertices.push(new THREE.Vector3( maxSize, y,-maxSize ));
 	    geo.vertices.push(new THREE.Vector3( maxSize, y, maxSize ));
-	    geo.vertices.push(new THREE.Vector3( -maxSize, y, maxSize ));
+	    geo.vertices.push(new THREE.Vector3(-maxSize, y, maxSize ));
 
 	    geo.faces.push( new THREE.Face3(0, 2, 1));
 	    geo.faces.push( new THREE.Face3(0, 3, 2));
@@ -30,29 +31,19 @@ function Floor()
 	this.initPts= function()
 	{
 		var segments = 32;
-		var maxHeight = 0.3;
-		var maxRadius = 3.8;
-
-		var deltaAngle = 2.0 * Math.PI / segments;
-
-		noise.seed(0);
 
 		// generate points
 		this.pts = new Array();
+
 		for ( var i = 0; i < segments; i ++ ) 
 		{
-			var radius = maxRadius + noise.simplex2(1.0, i+1.0) * maxRadius * 0.3;
-			var angle = i * deltaAngle;
-
-			var x = radius * Math.cos(angle);
-			var y = (noise.simplex2(1.0, i+100.0) * 0.5 + 0.5  ) * maxHeight; 
-			var z = radius * Math.sin(angle);
-
-			this.pts.push( new THREE.Vector3( x,y,z ) );
+			this.pts.push( new THREE.Vector3( 0,0,0 ) );
 		}
+
+		this.updatePts();
 	}
 
-	this.initFlatland = function()
+	this.initTerrain = function()
 	{
 		var colorFloor = 0x79A836;
 		var colorFloorSide = 0x4D7C39;
@@ -63,18 +54,21 @@ function Floor()
 
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
-			var pt_0 = this.pts[i];
+			geo.vertices.push(center);
+			geo.vertices.push(center);
+
+			/*var pt_0 = this.pts[i];
 			var pt_0_ground = pt_0.clone();
 			pt_0_ground.y = 0.0;
 
 			geo.vertices.push( pt_0 );
-			geo.vertices.push( pt_0_ground );
+			geo.vertices.push( pt_0_ground );*/
 		}
 
 		geo.vertices.push(center);
 
+		// init faces
 		var indexCenter = geo.vertices.length-1;
-
 		for ( var i = 0; i < this.pts.length; i ++ ) 
 		{
 			var i_next = (i+1)%this.pts.length;
@@ -101,13 +95,13 @@ function Floor()
 	            wireframeLinewidth: 3
 	        });
 
-	    var mesh = new THREE.Mesh(
+	    this.meshTerrain = new THREE.Mesh(
 	        geo,
 	        vertexColorMaterial
 	    );
-	    mesh.doubleSided = false;
-	    mesh.overdraw = false;
-	    g_scene.add(mesh);
+	    this.meshTerrain.doubleSided = false;
+	    this.meshTerrain.overdraw = false;
+	    g_scene.add(this.meshTerrain);
 	}
 
 	this.initRipple = function()
@@ -161,7 +155,6 @@ function Floor()
 
 	    g_scene.add(this.meshRipple);
 
-
 	    // ripples
 	    var geometry = new THREE.Geometry();
 		var material = new THREE.LineBasicMaterial({ color: colorRipple });
@@ -187,7 +180,7 @@ function Floor()
 	{
 		this.initWater();
 		this.initPts();
-		this.initFlatland();
+		this.initTerrain();
 		this.initRipple();
 	}
 
@@ -195,7 +188,7 @@ function Floor()
 	{
 	}
 
-	this.update = function()
+	this.updateRipple = function()
 	{
 		var time = Date.now() * 0.0008;
 		var timeWrapped = time % 1.0;
@@ -220,5 +213,48 @@ function Floor()
 		this.meshRippleMove.material.transparent = true;
 		this.meshRippleMove.material.opacity = 1.0-timeWrapped;
 		this.meshRippleMove.geometry.verticesNeedUpdate = true;
+	}
+
+	this.updatePts = function()
+	{	
+		var maxHeight = 0.3;
+		var maxRadius = 3.8;
+
+		var deltaAngle = 2.0 * Math.PI / this.pts.length;
+
+		// generate points
+		for ( var i = 0; i < this.pts.length; i ++ ) 
+		{
+			var radius = maxRadius + noise.simplex2(1.0, i+1.0) * maxRadius * 0.3;
+			var angle = i * deltaAngle;
+
+			var x = radius * Math.cos(angle);
+			var y = (noise.simplex2(1.0, i+100.0) * 0.5 + 0.5  ) * maxHeight; 
+			var z = radius * Math.sin(angle);
+
+			this.pts[i] = new THREE.Vector3( x,y,z );
+		}
+	}
+
+	this.updateTerrain = function()
+	{
+		for ( var i = 0; i < this.pts.length; i++ ) 
+		{
+			var pt_0 = this.pts[i];
+			var pt_0_ground = pt_0.clone();
+			pt_0_ground.y = 0.0;
+
+			this.meshTerrain.geometry.vertices[i*2] = pt_0; 
+			this.meshTerrain.geometry.vertices[i*2+1] = pt_0_ground; 
+		}
+
+		this.meshTerrain.geometry.verticesNeedUpdate = true;
+	}
+
+	this.update = function()
+	{
+		this.updatePts();
+		this.updateTerrain();
+		this.updateRipple();
 	}
 }
