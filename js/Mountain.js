@@ -9,7 +9,7 @@ function Mountain()
 		for ( var i =0; i < numRocks; i++ )
 		{
 			var colorBush_0 = new THREE.Color( 0x1F5247 );
-			var colorBush_1 = new THREE.Color( 0x225749 );
+			var colorBush_1 = new THREE.Color( 0x487A3D );
 			var colorBush = colorBush_0.clone();
 			colorBush.lerp( colorBush_1, randFloat(0.0,1.0) );
 
